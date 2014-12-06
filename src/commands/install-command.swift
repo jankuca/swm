@@ -56,6 +56,12 @@ class InstallCommand: Command {
     var url = url_desc;
     if !url.hasPrefix("git://") {
       url = "git://github.com/\(url)";
+      if let rev_range = url.rangeOfString("#.+$",
+          options: .RegularExpressionSearch) {
+        let rev = url.substringFromIndex(advance(rev_range.startIndex, 1));
+        url = url.substringToIndex(rev_range.startIndex);
+        url = "\(url).git#\(rev)";
+      }
     }
     return url;
   }
