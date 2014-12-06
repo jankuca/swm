@@ -1,5 +1,3 @@
-import Foundation
-
 
 class InstallCommand: Command {
   var module_manager: ModuleManager;
