@@ -2,7 +2,7 @@ import Foundation
 
 
 func main() {
-  let mgr = NSFileManager();
+  let mgr = NSFileManager.defaultManager();
   let current_directory = mgr.currentDirectoryPath;
 
   let app_factory = ApplicationFactory();
