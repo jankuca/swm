@@ -1,20 +1,32 @@
-import Cocoa
-import Foundation
+
+class ApplicationDelegate {
+  var commands_ = Dictionary<String, ()->Command>();
 
 
-class ApplicationDelegate: NSObject, NSApplicationDelegate {
-  var win: NSWindow;
+  func run(app: Application) {
+    print("run: ");
+    println(app.args);
 
-  init(window: NSWindow) {
-    self.win = window;
+    if app.args.isEmpty {
+      println("no command specified");
+      return;
+    }
+
+    let command_key = app.args[0];
+    if let factory = self.commands_[command_key] {
+      let command = factory();
+      if let directory = app.directory {
+        command.runInDirectory(directory);
+      } else {
+        command.run();
+      }
+    } else {
+      println("no such command: " + command_key);
+    }
   }
 
 
-  func applicationDidFinishLaunching(aNotification: NSNotification) {
-    self.win.title = "App"
-  }
-
-
-  func applicationWillTerminate(aNotification: NSNotification) {
+  func addCommand(command_key: String, factory: ()->Command) {
+    self.commands_[command_key] = factory;
   }
 }

@@ -1,28 +1,15 @@
-import Cocoa
+import Foundation
 
 
 func main() {
-  let app = NSApplication.sharedApplication();
-  let win = NSWindow(
-    contentRect: NSMakeRect(0, 0, 800, 600),
-    styleMask: NSTitledWindowMask | NSClosableWindowMask |
-        NSMiniaturizableWindowMask | NSResizableWindowMask,
-    backing: .Buffered,
-    defer: false
-  );
+  let mgr = NSFileManager();
+  let current_directory = mgr.currentDirectoryPath;
 
-  let win_delegate = WindowDelegate();
-  let app_delegate = ApplicationDelegate(window: win);
+  let app_factory = ApplicationFactory();
+  let app = app_factory.createApplication(current_directory);
 
-  app.delegate = app_delegate;
-  app.setActivationPolicy(NSApplicationActivationPolicy.Regular);
-
-  win.delegate = win_delegate;
-  win.center();
-  win.makeKeyAndOrderFront(win);
-
-  app.activateIgnoringOtherApps(true);
-  app.run();
+  let args = Array(Process.arguments[1..<Process.arguments.count]);
+  app.runWithArgs(args);
 }
 
 
