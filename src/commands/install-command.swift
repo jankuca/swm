@@ -2,9 +2,11 @@ import Foundation
 
 
 class InstallCommand: Command {
+  var file_manager: NSFileManager;
   var module_manager: ModuleManager;
 
   init(module_manager: ModuleManager) {
+    self.file_manager = NSFileManager.defaultManager();
     self.module_manager = module_manager;
   }
 
@@ -134,9 +136,8 @@ class InstallCommand: Command {
 
 
   func ensureDirectory_(dirname: String) {
-    let manager = NSFileManager.defaultManager();
-    if !manager.fileExistsAtPath(dirname) {
-      manager.createDirectoryAtPath(dirname,
+    if !self.file_manager.fileExistsAtPath(dirname) {
+      self.file_manager.createDirectoryAtPath(dirname,
           withIntermediateDirectories: false,
           attributes: nil,
           error: nil);
@@ -147,8 +148,7 @@ class InstallCommand: Command {
   func findSourceFiles_(dirname: String) -> [String] {
     var files = [String]();
 
-    let manager = NSFileManager.defaultManager();
-    if let enumerator = manager.enumeratorAtPath(dirname) {
+    if let enumerator = self.file_manager.enumeratorAtPath(dirname) {
       while let file = enumerator.nextObject() as? String {
         if file.hasSuffix(".swift") {
           files.append("\(dirname)/\(file)");
