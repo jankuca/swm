@@ -13,8 +13,8 @@ class InstallCommand: Command {
     println("run install command");
 
     if let info = self.module_manager.readModuleInfo("./swiftmodule.json") {
-      let dependencies = info["dependencies"];
-      self.installDependencies_(dependencies);
+      self.installDependencies_(info["dependencies"]);
+      self.buildCurrentPackage_(info["directories"]);
     } else {
       println("module.json not found");
     }
@@ -24,6 +24,15 @@ class InstallCommand: Command {
   func installDependencies_(dependenices: JSON) {
     for (name, path) in dependenices {
       self.installDependency_("\(name)", path: "\(path)");
+    }
+  }
+
+
+  func buildCurrentPackage_(directories: JSON) {
+    let source_directory = directories["source"];
+    if source_directory.type == "String" {
+      let source_dirname = "\(self.directory)/\(source_directory)";
+      self.buildDirectory_(source_dirname);
     }
   }
 
@@ -154,5 +163,26 @@ class InstallCommand: Command {
     }
 
     return files;
+  }
+
+
+  func buildDirectory_(dirname: String) {
+    let files = self.findSourceFiles_(dirname);
+    let filenames = files.map({ file in "\(dirname)/\(file)" });
+    self.buildFiles_(filenames);
+  }
+
+
+  func buildFiles_(filenames: [String]) {
+    var build_task = NSTask();
+    build_task.launchPath = "/usr/bin/xcrun";
+    build_task.currentDirectoryPath = self.directory;
+    build_task.arguments = [
+      "swiftc",
+      "-o", "\(self.directory)/build/app",
+      "-I", "\(self.directory)/.modules"
+    ] + filenames;
+    build_task.launch();
+    build_task.waitUntilExit();
   }
 }
