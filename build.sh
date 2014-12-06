@@ -5,7 +5,7 @@ source "./config.sh"
 echo -e "\033[0;36mBuilding app...\033[0m"
 
 # list source files
-source_files=$(find src -name "*.swift" | grep -v "$main_path")
+source_files=$(find src modules -name "*.swift" | grep -iv "tests/" | grep -v "$main_path")
 if [ "$1" = "-v" ]; then
   echo -ne "\033[2;37m"
   echo "$source_files"
