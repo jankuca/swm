@@ -37,16 +37,77 @@ class InstallCommand: Command {
 
   func installDependency_(name: String, path: String) {
     let path_parts = path.componentsSeparatedByString(" ");
-    let url = self.parseUrl_(path_parts[0]);
-    println("Dependency: \(name) from \(url)");
-    // TODO: download dependency (or should this be done via bower?)
-    // TODO: override by dependency's swiftmodule.json, if present
-    let attr_list = Array(path_parts[1..<path_parts.count]);
-    let attrs = self.parseAttributes_(attr_list);
-    var source_dirname = "\(self.directory)/modules/\(name)";
-    if let source_directory = attrs["source"] {
-      source_dirname = "\(source_dirname)/\(source_directory)";
+    let attrs = self.parseAttributes_(path_parts);
+
+    var url = self.parseUrl_(path_parts[0]);
+    var rev = "master";
+    if let rev_range = url.rangeOfString("#.+$",
+        options: .RegularExpressionSearch) {
+      rev = url.substringFromIndex(advance(rev_range.startIndex, 1));
+      url = url.substringToIndex(rev_range.startIndex);
     }
+    println("\(name) <- \(url)#\(rev)");
+
+    self.downloadDependency_(name, url: url, rev: rev);
+    self.buildDependency_(name, attrs: attrs);
+  }
+
+
+  func downloadDependency_(name: String, url: String, rev: String?)
+      -> String? {
+    let dirname = "\(self.directory)/modules/\(name)";
+    if self.file_manager.fileExistsAtPath(dirname) {
+      return dirname;
+    }
+
+    let init_task = NSTask();
+    init_task.currentDirectoryPath = self.directory;
+    init_task.launchPath = "/usr/bin/git";
+    init_task.arguments = [ "init", dirname ];
+    init_task.launch();
+    init_task.waitUntilExit();
+    if init_task.terminationStatus != 0 {
+      println("Error: Failed to init the dependency \(name)");
+      return nil;
+    }
+
+    let fetch_task = NSTask();
+    fetch_task.currentDirectoryPath = dirname;
+    fetch_task.launchPath = "/usr/bin/git";
+    fetch_task.arguments = [ "fetch", url ];
+    if let rev = rev {
+      fetch_task.arguments.append(rev);
+    };
+    fetch_task.launch();
+    fetch_task.waitUntilExit();
+    if fetch_task.terminationStatus != 0 {
+      println("Error: Failed to fetch the dependency \(name)");
+      return nil;
+    }
+
+    let reset_task = NSTask();
+    reset_task.currentDirectoryPath = dirname;
+    reset_task.launchPath = "/usr/bin/git";
+    reset_task.arguments = [ "reset", "--hard", "FETCH_HEAD" ];
+    reset_task.launch();
+    reset_task.waitUntilExit();
+    if reset_task.terminationStatus != 0 {
+      println("Error: Failed to update the dependency \(name)");
+      return nil;
+    }
+
+    return dirname;
+  }
+
+
+  func buildDependency_(name: String, attrs: [String:String]) {
+    let dependency_dirname = "\(self.directory)/modules/\(name)";
+    // TODO: override by dependency's swiftmodule.json, if present
+    var source_dirname = dependency_dirname;
+    if let source_directory = attrs["source"] {
+      source_dirname = "\(dependency_dirname)/\(source_directory)";
+    }
+
     let filenames = self.findSourceFiles_(source_dirname);
     self.compileModule_(name, filenames: filenames);
   }
@@ -99,7 +160,7 @@ class InstallCommand: Command {
       ] + filenames;
       task.launch();
       task.waitUntilExit();
-      println("-> \(task.currentDirectoryPath)/\(name).swiftmodule");
+      println("\(name) -> \(task.currentDirectoryPath)/\(name).swiftmodule");
     } else {
       println("Error: macosx sdk not found");
     }
