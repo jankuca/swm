@@ -83,20 +83,6 @@ class InstallCommand: Command {
   }
 
 
-  func parseFiles_(items: [String]) -> [String] {
-    let file_items = items.filter({ $0.hasPrefix("<") && $0.hasSuffix(">") });
-    var files = [String]();
-    for file_item in file_items {
-      let range = Range(
-        start: advance(file_item.startIndex, 1),
-        end: advance(file_item.endIndex, -1)
-      );
-      files.append("\(file_item.substringWithRange(range))");
-    }
-    return files;
-  }
-
-
   func compileModule_(name: String, filenames: [String]) {
     if let macosx_sdk_path = self.getSdkPath_("macosx") {
       let build_directory = "\(self.directory)/.modules";
