@@ -4,9 +4,6 @@ class ApplicationDelegate {
 
 
   func run(app: Application) {
-    print("run: ");
-    println(app.args);
-
     if app.args.isEmpty {
       println("no command specified");
       return;

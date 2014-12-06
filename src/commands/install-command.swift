@@ -10,13 +10,9 @@ class InstallCommand: Command {
 
 
   override func run() {
-    println("run install command");
-
     if let info = self.module_manager.readModuleInfo("./swiftmodule.json") {
       self.installDependencies_(info["dependencies"]);
       self.buildCurrentPackage_(info["directories"]);
-    } else {
-      println("module.json not found");
     }
   }
 
@@ -50,7 +46,6 @@ class InstallCommand: Command {
       source_dirname = "\(source_dirname)/\(source_directory)";
     }
     let filenames = self.findSourceFiles_(source_dirname);
-    print("Module filenames: "); println(filenames);
     self.compileModule_(name, filenames: filenames);
   }
 
@@ -98,7 +93,6 @@ class InstallCommand: Command {
     if let macosx_sdk_path = self.getSdkPath_("macosx") {
       let build_directory = "\(self.directory)/.modules";
       self.ensureDirectory_(build_directory);
-      println(".swiftmodule directory location: \(build_directory)");
 
       let task = NSTask();
       task.currentDirectoryPath = build_directory;
