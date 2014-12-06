@@ -12,7 +12,7 @@ $ npm install -g swm
 or without node.js:
 
 ```
-$ curl "https://raw.github.com/jankuca/swm/master/install.sh" | sh
+$ curl "https://raw.github.com/jankuca/swm/master/install.sh" | bash
 ```
 
 # Usage
