@@ -12,5 +12,5 @@ if [ ! -d "modules/JSON" ]; then
   git clone git://github.com/dankogai/swift-json.git modules/JSON
 fi
 
-./build.sh
+bash ./build.sh
 cp build/app /usr/local/bin/swm

@@ -1,0 +1,12 @@
+{
+  "name": "swm",
+  "version": "0.1.0",
+  "author": "Jan Kuča <jan@jankuca.com> (http://github.com/jankuca)",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jankuca/swm.git"
+  },
+  "scripts": {
+    "install": "./install.sh"
+  }
+}

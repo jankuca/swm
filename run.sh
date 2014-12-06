@@ -1,5 +1,5 @@
 
-./build.sh || exit 1
+bash ./build.sh || exit 1
 
 
 source "./config.sh"
