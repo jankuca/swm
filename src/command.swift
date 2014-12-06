@@ -16,6 +16,6 @@ class Command: NSObject {
 
   func runInDirectory(directory: String) {
     self.directory = directory;
-    self.run();
+    return self.run();
   }
 }
