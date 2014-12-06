@@ -33,14 +33,16 @@ class InstallCommand: Command {
     let url = self.parseUrl_(path_parts[0]);
     println("Dependency: \(name) from \(url)");
     // TODO: download dependency (or should this be done via bower?)
-    if path_parts.count != 1 {
-      // TODO: override by dependency's swiftmodule.json, if present
-      let path_items = Array(path_parts[1..<path_parts.count]);
-      let dep_relative_files = self.parseFiles_(path_items);
-      let files = dep_relative_files.map({ (file) in "modules/\(name)/\(file)"; });
-      print("Module files: "); println(files);
-      self.compileModule_(name, files: files);
+    // TODO: override by dependency's swiftmodule.json, if present
+    let attr_list = Array(path_parts[1..<path_parts.count]);
+    let attrs = self.parseAttributes_(attr_list);
+    var source_dirname = "\(self.directory)/modules/\(name)";
+    if let source_directory = attrs["source"] {
+      source_dirname = "\(source_dirname)/\(source_directory)";
     }
+    let filenames = self.findSourceFiles_(source_dirname);
+    print("Module filenames: "); println(filenames);
+    self.compileModule_(name, filenames: filenames);
   }
 
 
@@ -50,6 +52,22 @@ class InstallCommand: Command {
       url = "git://github.com/\(url)";
     }
     return url;
+  }
+
+
+  func parseAttributes_(attr_list: [String]) -> [String:String] {
+    var attrs = [String:String]();
+    for attr in attr_list {
+      if let key_range = attr.rangeOfString("^@(\\w+):",
+          options: .RegularExpressionSearch) {
+        let key = attr.substringWithRange(Range(
+          start: advance(key_range.startIndex, 1),
+          end: advance(key_range.endIndex, -1)
+        ));
+        attrs[key] = attr.substringFromIndex(key_range.endIndex);
+      }
+    }
+    return attrs;
   }
 
 
@@ -67,18 +85,26 @@ class InstallCommand: Command {
   }
 
 
-  func compileModule_(name: String, files: [String]) {
+  func compileModule_(name: String, filenames: [String]) {
     if let macosx_sdk_path = self.getSdkPath_("macosx") {
-      let task = NSTask();
-      task.currentDirectoryPath = "\(self.directory)/.modules";
-      println(".swiftmodule directory location: \(task.currentDirectoryPath)");
+      let build_directory = "\(self.directory)/.modules";
+      self.ensureDirectory_(build_directory);
+      println(".swiftmodule directory location: \(build_directory)");
 
-      let file_paths = files.map({ (file) in "../\(file)" });
+      let task = NSTask();
+      task.currentDirectoryPath = build_directory;
       task.launchPath = "/usr/bin/xcrun";
-      task.arguments = [ "swiftc", "-emit-module", "-sdk", macosx_sdk_path, "-module-name", name ] + file_paths;
+      task.arguments = [
+        "swiftc",
+        "-emit-module",
+        "-sdk", macosx_sdk_path,
+        "-module-name", name
+      ] + filenames;
       task.launch();
       task.waitUntilExit();
       println("-> \(task.currentDirectoryPath)/\(name).swiftmodule");
+    } else {
+      println("Error: macosx sdk not found");
     }
   }
 
@@ -87,7 +113,11 @@ class InstallCommand: Command {
     let sdk_task_output = NSPipe();
     let sdk_task = NSTask();
     sdk_task.launchPath = "/usr/bin/xcrun";
-    sdk_task.arguments = [ "--show-sdk-path", "--no-cache", "--sdk", sdk_name ];
+    sdk_task.arguments = [
+      "--show-sdk-path",
+      "--no-cache",
+      "--sdk", sdk_name
+    ];
     sdk_task.standardOutput = sdk_task_output;
     sdk_task.launch();
     sdk_task.waitUntilExit();
@@ -97,5 +127,32 @@ class InstallCommand: Command {
       return path.substringToIndex(path.length - 1);
     }
     return nil;
+  }
+
+
+  func ensureDirectory_(dirname: String) {
+    let manager = NSFileManager.defaultManager();
+    if !manager.fileExistsAtPath(dirname) {
+      manager.createDirectoryAtPath(dirname,
+          withIntermediateDirectories: false,
+          attributes: nil,
+          error: nil);
+    }
+  }
+
+
+  func findSourceFiles_(dirname: String) -> [String] {
+    var files = [String]();
+
+    let manager = NSFileManager.defaultManager();
+    if let enumerator = manager.enumeratorAtPath(dirname) {
+      while let file = enumerator.nextObject() as? String {
+        if file.hasSuffix(".swift") {
+          files.append("\(dirname)/\(file)");
+        }
+      }
+    }
+
+    return files;
   }
 }
