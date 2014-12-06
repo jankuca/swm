@@ -102,6 +102,9 @@ class InstallCommand: Command {
 
   func buildDependency_(name: String, attrs: [String:String]) {
     let dependency_dirname = "\(self.directory)/modules/\(name)";
+    let sub_install_cmd = InstallCommand(module_manager: self.module_manager);
+    sub_install_cmd.runInDirectory(dependency_dirname);
+
     // TODO: override by dependency's swiftmodule.json, if present
     var source_dirname = dependency_dirname;
     if let source_directory = attrs["source"] {
