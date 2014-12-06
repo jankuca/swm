@@ -1,20 +1,49 @@
 
-**swift-skeleton**
+**swift module manager**
 
-Develop Swift applications without the XCode GUI.
+The Swift Modules manager similar to the JavaScript world's *npm* and *bower*
 
-# Building
+# Installation
 
-To build the application, run the provided `build.sh` script.
-
-```sh
-$ ./build.sh
+```
+$ npm install -g swm
 ```
 
-To build **and run** the application, run the provided `run.sh` script which runs `buils.sh` internally.
+or without node.js:
 
-```sh
-$ ./run.sh
+```
+$ curl "https://raw.github.com/jankuca/swm/master/install.sh" | sh
 ```
 
-The built application is located in the `build` directory by default.
+# Usage
+
+Module dependencies are declared in a `swiftmodule.json` file in the JSON format:
+
+```
+{
+  "name": "ModuleName",
+  "dependencies": {
+    "Dependency": "jankuca/dependecy,
+    "MyOtherDependency": "git://github.com/jankuca/other-dependency"
+  }
+}
+```
+
+```
+$ swm install
+```
+
+## Using packages without a swiftmodule.json file
+
+If a package does not include the `swiftmodule.json` file, the including package needs to list the paths to the source files in its `swiftmodule.json`.
+
+```
+{
+  "name": "ModuleName",
+  "dependencies": {
+    "Dependency": "jankuca/dependency <src/something.swift> <src/main.swift>"
+  }
+}
+```
+
+As of right now, the all files need to be listed; pattern matching is not possible.

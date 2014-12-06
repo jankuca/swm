@@ -1,0 +1,6 @@
+{
+  "name": "swift-modules",
+  "dependencies": {
+    "JSON": "dankogai/swift-json <json/json.swift> <json/main.swift>"
+  }
+}
