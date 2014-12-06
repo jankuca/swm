@@ -36,6 +36,8 @@ Module dependencies are declared in a `swiftmodule.json` file in the JSON format
 $ swm install
 ```
 
+The dependencies are then importable via the `import` Swift statement using the names specified in the `dependencies` map of the `swiftmodule.json` file.
+
 ## Using packages without a swiftmodule.json file
 
 If a package does not include the `swiftmodule.json` file, the including package can specify the source file directory of the dependency in its `swiftmodule.json`.
