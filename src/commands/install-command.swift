@@ -10,7 +10,7 @@ class InstallCommand: Command {
 
 
   override func run() {
-    if let info = self.module_manager.readModuleInfo("./swiftmodule.json") {
+    if let info = self.module_manager.readModuleInfo(self.directory) {
       self.installDependencies_(info["dependencies"]);
       self.buildCurrentPackage_(info["directories"]);
     }

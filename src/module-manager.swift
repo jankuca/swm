@@ -1,6 +1,7 @@
 
 class ModuleManager {
-  func readModuleInfo(filename: String) -> JSON? {
+  func readModuleInfo(dirname: String) -> JSON? {
+    let filename = "\(dirname)/swiftmodule.json";
     if let data = String(contentsOfFile: filename) {
       let json = JSON.parse(data);
       return json;
