@@ -72,7 +72,7 @@ class ModuleManager {
       -> ModuleInfo? {
     let dirname = "\(module_dirname)/modules/\(name)";
     if self.file_manager.fileExistsAtPath(dirname) {
-      return nil;
+      return self.getDependencyInfo_(dirname, name: name, attrs: ref.attrs);
     }
 
     let init_args = [ "init", dirname ];
@@ -106,10 +106,16 @@ class ModuleManager {
       return nil;
     }
 
+    return self.getDependencyInfo_(dirname, name: name, attrs: ref.attrs);
+  }
+
+
+  func getDependencyInfo_(
+      dirname: String, name: String, attrs: [String:String]) -> ModuleInfo? {
     let info = self.readModuleInfo(dirname);
     if let info = info {
       info.name = name;
-      self.applyDependencyAttributes_(info, attrs: ref.attrs);
+      self.applyDependencyAttributes_(info, attrs: attrs);
     }
     return info;
   }
