@@ -40,7 +40,8 @@ class InstallCommand: Command {
           module_manager: self.module_manager,
           compiler: compiler
         );
-        sub_install_cmd.runInDirectory(dependency_dirname);
+        sub_install_cmd.directory = dependency_dirname;
+        sub_install_cmd.run();
         return dependency_info;
       }
     }

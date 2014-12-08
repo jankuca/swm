@@ -13,9 +13,4 @@ class Command: NSObject {
   func run() {
     println("run command");
   }
-
-  func runInDirectory(directory: String) {
-    self.directory = directory;
-    return self.run();
-  }
 }

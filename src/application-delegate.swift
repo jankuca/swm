@@ -13,10 +13,9 @@ class ApplicationDelegate {
     if let factory = self.commands_[command_key] {
       let command = factory();
       if let directory = app.directory {
-        command.runInDirectory(directory);
-      } else {
-        command.run();
+        command.directory = directory;
       }
+      command.run();
     } else {
       println("no such command: " + command_key);
     }
