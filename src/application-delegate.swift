@@ -15,7 +15,8 @@ class ApplicationDelegate {
       if let directory = app.directory {
         command.directory = directory;
       }
-      command.run();
+      let result: CommandResult = command.run();
+      print(result.render());
     } else {
       println("no such command: " + command_key);
     }
