@@ -32,9 +32,7 @@ class InstallCommandResult: CommandResult {
         names = subtree_keys;
       }
     } else {
-      for name in self.dependency_tree.keys {
-        names.append(name);
-      }
+      names = Array(self.dependency_tree.keys);
     }
 
     for name in names {
