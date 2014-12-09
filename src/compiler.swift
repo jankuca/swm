@@ -47,6 +47,22 @@ class Compiler {
   }
 
 
+  func getBuiltModules(dirname: String) -> [String] {
+    var modules = [String]();
+    let build_dirname = self.getBuildDirectory_(dirname);
+
+    if let enumerator = self.file_manager.enumeratorAtPath(build_dirname) {
+      while let file = enumerator.nextObject() as? String {
+        if file.hasSuffix(".swiftmodule") {
+          modules.append(file.substringToIndex(advance(file.endIndex, -12)));
+        }
+      }
+    }
+
+    return modules;
+  }
+
+
   func getSdkPath_(sdk_name: String) -> String? {
     let args = [
       "--show-sdk-path",

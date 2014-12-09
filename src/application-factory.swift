@@ -6,20 +6,26 @@ class ApplicationFactory {
     let app = Application(directory: directory);
     let app_delegate = ApplicationDelegate();
 
+    let file_manager = NSFileManager.defaultManager();
+    let tasks = TaskDispatcher();
+
+    let compiler = Compiler(
+      file_manager: file_manager,
+      tasks: tasks
+    );
+    let module_manager = ModuleManager(
+      file_manager: file_manager,
+      tasks: tasks
+    );
+
     app_delegate.addCommand("install", {
-      let file_manager = NSFileManager.defaultManager();
-      let tasks = TaskDispatcher();
-
-      let compiler = Compiler(
-        file_manager: file_manager,
-        tasks: tasks
-      );
-      let module_manager = ModuleManager(
-        file_manager: file_manager,
-        tasks: tasks
-      );
-
       return InstallCommand(
+        module_manager: module_manager,
+        compiler: compiler
+      );
+    });
+    app_delegate.addCommand("list", {
+      return ListCommand(
         module_manager: module_manager,
         compiler: compiler
       );

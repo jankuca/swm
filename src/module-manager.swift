@@ -16,14 +16,50 @@ class ModuleManager {
       return nil;
     }
 
+    let dirname_levels = dirname.componentsSeparatedByString("/");
+
     let info = ModuleInfo();
     info.directory = dirname;
+    info.name = dirname_levels.last;
     if let json = self.readModuleFile_(dirname) {
       self.populateModuleInfo_(info, json: json);
       return info;
     }
 
     return info;
+  }
+
+
+  func getInstalledDependencies(module_dirname: String)
+      -> [String:ModuleInfo] {
+    var dependencies = [String:ModuleInfo]();
+    if let info = self.readModuleInfo(module_dirname) {
+      let dirname = "\(module_dirname)/modules";
+
+      let files = self.file_manager.contentsOfDirectoryAtPath(
+          dirname, error: nil);
+      for file in files as [String] {
+        var is_directory: ObjCBool = false;
+        self.file_manager.fileExistsAtPath("\(dirname)/\(file)",
+            isDirectory: &is_directory);
+        if is_directory {
+          if let ref = info.dependencies[file] {
+            if let dependency_info = self.getDependencyInfo_(
+                "\(dirname)/\(file)",
+                name: file,
+                attrs: ref.attrs) {
+              dependencies[file] = dependency_info;
+            }
+          } else {
+            if let dependency_info = self.readModuleInfo("\(dirname)/\(file)") {
+              dependencies[file] = dependency_info;
+            }
+          }
+        }
+      }
+    }
+
+    return dependencies;
   }
 
 
