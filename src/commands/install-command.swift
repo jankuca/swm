@@ -9,7 +9,7 @@ class InstallCommand: Command {
   }
 
 
-  override func run() -> InstallCommandResult {
+  override func run(args: [String]) -> InstallCommandResult {
     let result = InstallCommandResult(success: true);
 
     if let info = self.module_manager.readModuleInfo(self.directory) {
@@ -60,7 +60,7 @@ class InstallCommand: Command {
           compiler: compiler
         );
         sub_install_cmd.directory = dependency_dirname;
-        let sub_result = sub_install_cmd.run();
+        let sub_result = sub_install_cmd.run([]);
         return (sub_result, dependency_info);
       }
     }

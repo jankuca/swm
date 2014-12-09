@@ -10,7 +10,7 @@ class Command: NSObject {
   }
 
 
-  func run() -> CommandResult {
+  func run(args: [String]) -> CommandResult {
     println("run command");
     return CommandResult(success: true);
   }
