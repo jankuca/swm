@@ -26,7 +26,7 @@ Module dependencies are declared in a `swiftmodule.json` file in the JSON format
     "source": "src"
   },
   "dependencies": {
-    "Dependency": "jankuca/dependecy,
+    "Dependency": "jankuca/dependecy",
     "MyOtherDependency": "git://github.com/jankuca/other-dependency"
   }
 }
