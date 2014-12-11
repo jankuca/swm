@@ -24,6 +24,12 @@ class ApplicationFactory {
         compiler: compiler
       );
     });
+    app_delegate.addCommand("build", {
+      return BuildCommand(
+        module_manager: module_manager,
+        compiler: compiler
+      );
+    });
     app_delegate.addCommand("list", {
       return ListCommand(
         module_manager: module_manager,

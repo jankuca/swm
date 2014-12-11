@@ -19,8 +19,8 @@ class InstallCommand: Command {
         result.setDependencyTree(install_tree);
       }
       if (result.success) {
-        let build_success = self.buildCurrentPackage_(info);
-        result.success = result.success && build_success;
+        let build_result = self.buildCurrentPackage_(info);
+        result.success = result.success && build_result.success;
       }
     }
 
@@ -82,15 +82,12 @@ class InstallCommand: Command {
   }
 
 
-  func buildCurrentPackage_(info: ModuleInfo) -> Bool {
-    if let source_dirname = info.directories["source"] {
-      let build_filename = "\(self.directory)/build/app";
-      self.compiler.compileApp(
-        build_filename,
-        dirname: source_dirname,
-        cwd: self.directory
-      );
-    }
-    return true;
+  func buildCurrentPackage_(info: ModuleInfo) -> CommandResult {
+    let build_cmd = BuildCommand(
+      module_manager: self.module_manager,
+      compiler: self.compiler
+    );
+    build_cmd.directory = self.directory;
+    return build_cmd.run([]);
   }
 }
