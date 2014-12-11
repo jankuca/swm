@@ -32,6 +32,9 @@ class Compiler {
   func compileApp(
       output_filename: String, dirname: String, cwd: String? = nil) {
     if let macosx_sdk_path = self.getSdkPath_("macosx") {
+      let output_dirname = output_filename.stringByDeletingLastPathComponent;
+      self.ensureDirectory_(output_dirname);
+
       var args = [
         "swiftc",
         "-sdk", macosx_sdk_path,
