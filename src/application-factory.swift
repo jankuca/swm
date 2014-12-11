@@ -36,6 +36,14 @@ class ApplicationFactory {
         compiler: compiler
       );
     });
+    app_delegate.addCommand("sign", {
+      return SignCommand(
+        module_manager: module_manager,
+        compiler: compiler,
+        file_manager: file_manager,
+        tasks: tasks
+      );
+    });
 
     app.delegate = app_delegate;
     return app;
