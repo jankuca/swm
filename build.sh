@@ -17,7 +17,7 @@ fi
   rm -rf "$app_path"
   mkdir -p "$app_bin_dirname"
   echo "$source_files" | xargs xcrun swiftc -o "$app_bin_path" "$main_path" || exit 1
-  chmod +x "$app_path" || exit 1
+  chmod +x "$app_bin_path" || exit 1
 } || {
   echo -e "\033[0;31merror\033["
   exit 1
