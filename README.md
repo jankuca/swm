@@ -5,11 +5,6 @@ The Swift Modules manager similar to the JavaScript world's *npm* and *bower*
 
 # Installation
 
-```
-$ npm install -g swm
-```
-
-or without node.js:
 
 ```
 $ curl "https://raw.github.com/jankuca/swm/master/install.sh" | bash
